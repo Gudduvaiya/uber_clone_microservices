@@ -1,0 +1,9 @@
+import express from "express";
+import app from "./app.js";
+import http from "http";
+
+const server = http.createServer(app);
+
+server.listen(3001, () => {
+  console.log("User Server Running on Port 3001");
+});
