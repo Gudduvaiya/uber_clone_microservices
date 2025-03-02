@@ -1,21 +1,28 @@
 import ridesModel from "../models/rides.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { publishToQueue } from "../services/rabbit.js";
 
 export const createRide = async (req, res) => {
   try {
-    const { source, pickup } = req.body;
+    const { source, destination } = req.body;
     const newRide = new ridesModel({
       source,
-      pickup,
+      destination,
       user: req.user._id,
     });
     await newRide.save();
 
     // Here to communicate with tith captains, we need a message broker who sends our ride request to all the available captains. So that's why rabitmq comes into the picture..
 
-    // Rabbit MQ is an message broker which performs asynchrouns operations in microSevices structure. It has a Queue to perform it's task. 
+    // Rabbit MQ is an message broker which performs asynchrouns operations in microSevices structure. It has a Queue to perform it's task.
 
+    // To perform asynchronous communication between 2 microservices we use Rabbit MQ.
+
+    publishToQueue("new-ride", JSON.stringify(newRide));
+    res.send({ message: "Ride Created Successfully!", newRide });
+
+    //here we publish a queue to RabbitMQ. new-ride is the queue name and then we send the ride Data over there.
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Something went Wrong!" });

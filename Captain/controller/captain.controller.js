@@ -2,6 +2,7 @@ import captainModel from "../models/captain.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import blacklistTokenModel from "../models/blacklistToken.model.js";
+import { subscribeToQueue } from "../services/rabbit.js";
 
 export const register = async (req, res) => {
   try {
@@ -97,3 +98,4 @@ export const toggeAvailablity = async (req, res) => {
     res.status(500).send("SOmething went wrong!");
   }
 };
+
